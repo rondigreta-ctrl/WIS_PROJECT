@@ -1,0 +1,158 @@
+========================================================
+GEWISS — AI HOME AGENT
+Design Tokens & Styles Handoff
+Figma file: https://www.figma.com/design/Mkudc4fEIwsxk170hjpPzf
+Progetto: UX/UI Master Project Work — Monica Milani, 29/06/2026
+========================================================
+
+
+────────────────────────────────────────
+1. TEXT STYLES (già creati nel file Figma)
+Font UI:    Inter (Regular 400 / Medium 500 / Semi Bold 600 / Bold 700)
+Font Data:  IBM Plex Mono (Medium 500 / Semi Bold 600)
+────────────────────────────────────────
+
+NAME              FAMILY         WEIGHT      SIZE   LINE-H   USO
+─────────────────────────────────────────────────────────────────────────────
+type/display      Inter          Bold 700    32px   38px     Hero title — "Home Milan", splash, onboarding
+type/h1           Inter          Bold 700    24px   30px     Titoli pagina, sezioni principali
+type/h2           Inter          Semi Bold   18px   24px     Sottosezioni, header card, nome stanza
+type/body-l       Inter          Regular     16px   24px     Testo lungo, descrizioni AI agent, onboarding copy
+type/body-m       Inter          Regular     14px   20px     Body default — quasi tutto il testo UI
+type/body-s       Inter          Regular     12px   16px     Caption, helper text, label secondarie, note
+type/label        Inter          Semi Bold   13px   16px     Label bottoni, badge, tab bar, form label
+type/data-l       IBM Plex Mono  Semi Bold   28px   32px     Readout dati primari: temperatura (21°C), kW
+type/data-s       IBM Plex Mono  Medium      14px   18px     Readout dati secondari: %, timestamp, status AI
+
+
+────────────────────────────────────────
+2. COLORI — PALETTE PRIMARIA (Orange ramp)
+Già presenti nel file principale dell'utente.
+────────────────────────────────────────
+
+TOKEN NAME           HEX        USO
+────────────────────────────────────────────────────────────────────────────
+color/primary/1      #FFF6F2    Background tint, hover state su superfici chiare
+color/primary/2      #FFEEE6    Sfondo bottone secondario/soft, chip in stato attivo
+color/primary/3      #FFD3BF    Warning background, highlight leggero
+color/primary/4      #F48457    Icone accent, illustrazioni, highlight grafico
+color/primary/5      #E84E0F    ⭐ Colore brand principale — logo, CTA primaria
+color/primary/6      #DB3700    Bottone primario default (es. "Good night", "Login or register")
+color/primary/7      #A32900    Bottone primario pressed/hover, testo su bg orange/2
+
+
+────────────────────────────────────────
+3. COLORI — NEUTRALI (Grey ramp + Black)
+────────────────────────────────────────
+
+TOKEN NAME           HEX        USO
+────────────────────────────────────────────────────────────────────────────
+color/grey/1         #FAFAFA    Background app (light), surface card
+color/grey/2         #F5F5F6    Background alternativo, card secondary, input field bg
+color/grey/3         #E9E8E8    Divider, bordo input, separatori sottili
+color/grey/4         #D7D5D6    Bordo componente, stato disabled outline
+color/grey/5         #A4A3A4    Testo placeholder, label inattiva, icona disabled
+color/grey/6         #747272    Testo secondario, caption, metadati
+color/grey/7         #3C3839    Testo primario scuro (alternativo al black puro)
+color/black          #000000    Testo primario su sfondi chiari, header
+
+
+────────────────────────────────────────
+4. COLORI — SECONDARY (per categorie stanze/ambienti)
+Regola d'uso: ognuna identifica una stanza o categoria. NON usare per azioni o stati.
+Ogni colore ha 3 step: light / mid / dark.
+────────────────────────────────────────
+
+NOME        STEP     HEX        USO CONSIGLIATO
+────────────────────────────────────────────────────────────────────────────
+Beige       light    #F5EEE3    Soggiorno — chip bg
+Beige       mid      #E8D9C4    Soggiorno — tag selezionato
+Beige       dark     #8B6B47    Soggiorno — testo su tag, icona
+
+Blue        light    #D4F0F7    Bagno — chip bg
+Blue        mid      #A9DDEA    Bagno — tag selezionato
+Blue        dark     #1B5E80    Bagno — testo su tag, icona
+
+Lime        light    #EEF4B0    Giardino/Esterno — chip bg
+Lime        mid      #DCE894    Giardino/Esterno — tag selezionato
+Lime        dark     #4C5408    Giardino/Esterno — testo su tag, icona
+
+Purple      light    #F0E0FF    Studio/Ufficio — chip bg
+Purple      mid      #E0C2F2    Studio/Ufficio — tag selezionato
+Purple      dark     #5A1A80    Studio/Ufficio — testo su tag, icona
+
+Teal        light    #D4F5F1    Cucina — chip bg
+Teal        mid      #A8E4DD    Cucina — tag selezionato
+Teal        dark     #0B5C53    Cucina — testo su tag, icona
+
+
+────────────────────────────────────────
+5. COLORI — FEEDBACK / STATO SISTEMA
+Regola d'uso: questi token comunicano lo stato di un device o dell'agente AI, non l'identità di una stanza.
+────────────────────────────────────────
+
+TOKEN NAME               HEX         USO
+────────────────────────────────────────────────────────────────────────────
+color/feedback/success-bg  #A8E4DD   Background badge "Connected", "On" — usa Teal mid
+color/feedback/success-fg  #0B5C53   Testo/icona su success bg — usa Teal dark
+color/feedback/warning-bg  #FFD3BF   Background badge "Updating…", "Offline" — usa Orange/3
+color/feedback/warning-fg  #A32900   Testo/icona su warning bg — usa Orange/7
+color/feedback/error-bg    #F2C4BE   Background badge "Error", "Unreachable" — nuovo token
+color/feedback/error-fg    #7A2A1C   Testo/icona su error bg — nuovo token (validare con brand)
+color/feedback/info-bg     #A9DDEA   Background badge "Tip", notifica agente AI — usa Blue mid
+color/feedback/info-fg     #0F4A60   Testo/icona su info bg — usa Blue dark
+
+
+────────────────────────────────────────
+6. ALIAS SEMANTICI CONSIGLIATI (da creare come Variable aliases)
+Servono per fare riferimento ai token semantici nei componenti,
+così se cambia il brand color basta aggiornare un solo alias.
+────────────────────────────────────────
+
+ALIAS                    → RIFERISCE A              SPIEGAZIONE
+────────────────────────────────────────────────────────────────────────────
+color/accent/default     → color/primary/6          Bottone primario, link, CTA
+color/accent/pressed     → color/primary/7          Stato pressed/hover accent
+color/accent/soft-bg     → color/primary/2          Sfondo chip/bottone secondario
+color/accent/soft-fg     → color/primary/7          Testo su sfondo soft
+color/text/primary       → color/black              Testo principale
+color/text/secondary     → color/grey/6             Testo secondario, caption
+color/text/disabled      → color/grey/5             Testo disabilitato
+color/bg/surface         → color/grey/1             Sfondo app principale
+color/bg/card            → color/grey/2             Sfondo card, input, sheet
+color/border/default     → color/grey/3             Bordo componente default
+color/border/focus       → color/primary/6          Bordo input in focus
+
+
+────────────────────────────────────────
+7. NOTE PER CLAUDE DESIGN / FIGMA MAKE
+────────────────────────────────────────
+
+- Font Inter: disponibile su Google Fonts (https://fonts.google.com/specimen/Inter)
+  Importare come Variable Font se possibile (Inter[wght] 100–900).
+
+- Font IBM Plex Mono: disponibile su Google Fonts
+  (https://fonts.google.com/specimen/IBM+Plex+Mono)
+  Usarlo SOLO per readout numerici (temperatura, %, kW, timestamp AI).
+  Mai per paragrafi o label UI.
+
+- I colori error (#F2C4BE / #7A2A1C) sono nuovi token non presenti nel
+  brief originale. Derivati dalla logica warm/brand ma differenziati
+  dal warning (orange). Devono essere validati dal team brand Gewiss.
+
+- Il brief usa un'app esistente "Gewiss ChoruSmart" come reference.
+  L'app mostra già font Inter-like e un'UI con card bianche su bg grigio/1.
+
+- Per la moodboard / style direction: l'AI Home Agent deve comunicare
+  "tecnologia invisibile, calore domestico". Evitare toni cold-tech (blu).
+  La palette calda (orange + beige + teal) è la chiave visiva distintiva.
+
+- La distinzione tra Secondary (identità stanze) e Feedback (stato sistema)
+  è intenzionale: non mescolare i colori category-room con i colori di stato,
+  perché creerebbe ambiguità percettiva nell'interfaccia.
+
+========================================================
+Fine documento — generato da Claude (Anthropic) + Figma MCP
+File Figma tokens: https://www.figma.com/design/Mkudc4fEIwsxk170hjpPzf
+File UI originale: https://www.figma.com/design/NxKuF8hpIMghX0Wi4h1eOK
+========================================================

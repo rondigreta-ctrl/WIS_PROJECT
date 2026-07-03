@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WIS.home — Progettiamo la Relazione, non il comando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  :root{
+    --primary-1:#FFF6F2; --primary-2:#FFEEE6; --primary-3:#FFD3BF; --primary-4:#F48457; --primary-5:#E84E0F; --primary-6:#DB3700; --primary-7:#A32900;
+    --grey-1:#FAFAFA; --grey-2:#F5F5F6; --grey-3:#E9E8E8; --grey-4:#D7D5D6; --grey-5:#A4A3A4; --grey-6:#747272; --grey-7:#3C3839; --black:#0E0C0C;
+    --teal-light:#D4F5F1; --teal-mid:#A8E4DD; --teal-dark:#0B5C53;
+    --blue-light:#D4F0F7; --blue-dark:#1B5E80;
+    --beige-light:#F5EEE3; --beige-dark:#8B6B47;
+    --purple-dark:#5A1A80;
+    --gewiss-red:#E30613;
+    --font-ui:'Inter',system-ui,sans-serif;
+    --font-data:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-snap-type:y proximity; scroll-behavior:smooth;}
+  body{
+    margin:0; font-family:var(--font-ui); background:var(--grey-1); color:var(--black);
+    -webkit-font-smoothing:antialiased;
+  }
+  section.slide{
+    min-height:100vh; width:100%; position:relative; overflow:hidden;
+    scroll-snap-align:start; display:flex; flex-direction:column; justify-content:center;
+    padding:clamp(28px,5vw,80px) clamp(24px,7vw,120px);
+  }
+
+  /* ---------- chrome: logo lockup ---------- */
+  .brand-tag{
+    display:inline-flex; align-items:center; justify-content:center; gap:2px;
+    width:44px;height:44px; background:var(--primary-6); border-radius:50% 50% 50% 6px;
+    color:#fff; font-weight:800; font-size:13px; position:relative; flex-shrink:0;
+  }
+  .brand-tag::after{
+    content:"···"; position:absolute; top:-9px; right:-6px; font-size:9px; font-weight:900;
+    color:var(--primary-6); background:#fff; padding:1px 4px; border-radius:8px; letter-spacing:1px;
+  }
+  .brand-gewiss{ font-weight:900; font-size:15px; letter-spacing:-.02em; color:var(--gewiss-red); }
+  .brand-gewiss.on-dark{ color:#fff; }
+  .lockup{ display:flex; align-items:center; gap:10px; }
+  .lockup .x{ color:var(--grey-5); font-weight:600; font-size:13px; }
+
+  .slide-chrome{
+    position:absolute; inset:0; pointer-events:none; z-index:5;
+  }
+  .chrome-topleft{ position:absolute; top:clamp(20px,3vw,40px); left:clamp(24px,7vw,120px); font-weight:800; font-size:15px; letter-spacing:-.01em; }
+  .chrome-topright{ position:absolute; top:clamp(20px,3vw,40px); right:clamp(24px,7vw,120px); }
+  .chrome-bottomleft{ position:absolute; bottom:clamp(20px,3vw,40px); left:clamp(24px,7vw,120px); }
+  .chrome-footnote{ position:absolute; bottom:clamp(20px,3vw,40px); right:clamp(24px,7vw,120px); font-size:11px; color:var(--grey-5); font-weight:500; }
+
+  /* ---------- nav dots ---------- */
+  #navdots{
+    position:fixed; right:18px; top:50%; transform:translateY(-50%); z-index:100;
+    display:flex; flex-direction:column; gap:12px; align-items:center;
+  }
+  #navdots a{
+    width:9px; height:9px; border-radius:50%; background:var(--grey-4); display:block;
+    transition:all .25s ease; position:relative;
+  }
+  #navdots a::before{
+    content:attr(data-label); position:absolute; right:18px; top:50%; transform:translateY(-50%);
+    background:var(--black); color:#fff; font-size:11px; font-weight:600; padding:4px 9px; border-radius:6px;
+    white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s ease;
+  }
+  #navdots a:hover::before{ opacity:1; }
+  #navdots a.active{ background:var(--primary-6); transform:scale(1.35); }
+  @media (max-width:760px){ #navdots{ display:none; } }
+
+  /* ---------- phone mock ---------- */
+  .phone{
+    width:clamp(200px,22vw,280px); aspect-ratio:9/19; background:#0b0b0c; border-radius:15% / 7%;
+    padding:3.2%; box-shadow:0 50px 90px -35px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.05) inset;
+    flex-shrink:0; position:relative;
+  }
+  .phone__notch{
+    position:absolute; top:3.2%; left:50%; transform:translateX(-50%); width:34%; height:3.2%;
+    background:#0b0b0c; border-radius:0 0 40% 40%; z-index:5;
+  }
+  .phone__inner{ width:100%; height:100%; border-radius:12% / 5.6%; overflow:hidden; position:relative; background:#fff; }
+  .phone__inner img{ width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+  .phone__inner.stack{ display:flex; flex-direction:column; background:var(--grey-2); }
+
+  /* ---------- watch mock ---------- */
+  .watch{ width:clamp(150px,15vw,190px); aspect-ratio:.83; background:#151517; border-radius:30%; padding:6%; position:relative; box-shadow:0 40px 70px -25px rgba(0,0,0,.55); flex-shrink:0; }
+  .watch::before{ content:""; position:absolute; right:-7px; top:32%; width:9px; height:15%; background:#151517; border-radius:4px; }
+  .watch::after{ content:""; position:absolute; right:-5px; top:52%; width:6px; height:9%; background:#151517; border-radius:3px; }
+  .watch__screen{ width:100%; height:100%; background:#000; border-radius:24%; overflow:hidden; padding:10%; color:#fff; display:flex; flex-direction:column; }
+
+  h1,h2,h3,p{ margin:0; }
+  .eyebrow{ font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--primary-6); }
+  .quote-mark{ color:var(--primary-6); font-weight:800; }
+
+  .btnrow{ display:flex; gap:10px; align-items:center; }
+  .pill{ padding:5px 12px; border-radius:99px; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:5px; }
+
+  /* ================= SLIDE 1 — COVER ================= */
+  #s1{
+    background:radial-gradient(120% 140% at 15% 10%, #F0703A 0%, var(--primary-5) 45%, var(--primary-6) 100%);
+    align-items:center;
+  }
+  #s1 .chrome-topleft{ color:#fff; }
+  .cover-wrap{ position:relative; width:100%; max-width:1400px; margin:0 auto; display:flex; align-items:center; justify-content:center; min-height:70vh; }
+  .cover-headline{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; font-weight:800; line-height:.98; letter-spacing:-.03em;
+    font-size:clamp(38px,7.2vw,110px); z-index:1; gap:2px;
+  }
+  .cover-headline .l1{ color:#fff; }
+  .cover-headline .l1 b{ color:var(--black); font-weight:800; }
+  .cover-headline .l2 b{ color:var(--black); font-weight:800; }
+  .cover-headline .l2{ color:#fff; }
+  .cover-phone{ position:relative; z-index:2; }
+  .cover-sub{ position:relative; z-index:3; margin-top:clamp(220px,32vw,420px); text-align:center; color:#fff; font-size:clamp(14px,1.6vw,19px); font-weight:500; max-width:640px; opacity:.95; }
+
+  /* ================= SLIDE 2 — TIMELINE ================= */
+  #s2{ background:#fff; align-items:center; }
+  .s2-content{ width:100%; max-width:1300px; margin:0 auto; position:relative; }
+  .s2-orange{
+    background:linear-gradient(160deg,#F0703A,var(--primary-5) 60%);
+    border-radius:36px; padding:clamp(36px,5vw,64px) clamp(28px,5vw,56px) clamp(90px,9vw,130px);
+    position:relative; z-index:1;
+  }
+  .s2-orange .eyebrow.on-wave{ color:#fff; }
+  .s2-orange h1{ color:#fff; font-size:clamp(30px,4vw,50px); font-weight:800; letter-spacing:-.02em; margin-top:10px; }
+  .timeline-row{ position:relative; z-index:2; display:flex; gap:clamp(14px,2vw,28px); margin-top:clamp(-70px,-6vw,-50px); flex-wrap:wrap; padding:0 clamp(8px,1vw,16px); }
+  .tl-card{
+    background:#fff; border-radius:22px; padding:clamp(22px,2.4vw,34px) clamp(20px,2.6vw,38px);
+    box-shadow:0 20px 45px -20px rgba(0,0,0,.25); font-weight:800; font-size:clamp(20px,2.2vw,32px);
+    flex:1; min-width:150px; text-align:center; color:var(--black);
+  }
+  .tl-card.accent{ color:var(--primary-6); }
+  .tl-axis{ position:relative; z-index:2; margin-top:clamp(50px,7vw,90px); display:flex; align-items:center; gap:10px; padding:0 clamp(8px,1vw,16px); }
+  .tl-axis .line{ flex:1; height:0; border-top:3px dashed var(--primary-3); position:relative; }
+  .tl-axis .arrowhead{ color:var(--primary-4); font-size:22px; }
+  .tl-labels{ position:relative; z-index:2; display:flex; justify-content:space-between; margin-top:10px; font-size:13px; font-weight:700; letter-spacing:.06em; color:var(--primary-6); padding:0 clamp(8px,1vw,16px); }
+
+  /* ================= SLIDE 3 — MANIFESTO ================= */
+  #s3{ background:#fff; align-items:center; text-align:center; }
+  .arc-deco{ position:absolute; top:6%; left:-4%; width:108%; height:88%; }
+  .manifesto-quote{
+    position:relative; z-index:1; max-width:1180px; margin:0 auto; font-weight:800; letter-spacing:-.02em;
+    font-size:clamp(26px,4vw,54px); line-height:1.28; color:var(--black);
+  }
+  .manifesto-quote .hl{ color:var(--primary-6); }
+
+  /* ================= SLIDE 4 — PERSONA ================= */
+  #s4{ background:var(--grey-7); color:#fff; }
+  .persona-wrap{ position:relative; z-index:1; display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(30px,4vw,70px); align-items:center; max-width:1400px; margin:0 auto; width:100%; }
+  .persona-head{ font-size:clamp(28px,3.6vw,46px); font-weight:800; letter-spacing:-.02em; margin-bottom:8px; }
+  .persona-sub{ color:var(--grey-5); font-size:clamp(14px,1.4vw,17px); margin-bottom:clamp(24px,3vw,40px); max-width:460px; }
+  .persona-stats{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(12px,1.6vw,20px); }
+  .p-stat{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:clamp(16px,2vw,26px); }
+  .p-stat iconify-icon{ font-size:22px; color:var(--primary-4); margin-bottom:10px; display:block; }
+  .p-stat .num{ font-family:var(--font-data); font-weight:600; font-size:clamp(20px,2vw,28px); }
+  .p-stat .lbl{ color:var(--grey-5); font-size:13px; margin-top:4px; line-height:1.4; }
+  .persona-visual{
+    background:linear-gradient(155deg,var(--primary-4),var(--primary-6)); border-radius:32px; aspect-ratio:1/1.05;
+    display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  }
+  .persona-visual img{ width:66%; filter:drop-shadow(0 30px 40px rgba(0,0,0,.35)); }
+  .persona-visual .tag2{ position:absolute; bottom:24px; left:24px; right:24px; background:rgba(0,0,0,.28); backdrop-filter:blur(6px); border-radius:14px; padding:14px 18px; font-size:13px; font-weight:600; color:#fff; }
+
+  /* ================= SLIDE 5 — PAIN POINTS ================= */
+  #s5{ background:#fff; }
+  #s5 h1{ font-size:clamp(34px,5vw,64px); font-weight:800; letter-spacing:-.02em; line-height:1.05; max-width:800px; }
+  .pp-row{ display:flex; align-items:flex-start; gap:clamp(8px,1.4vw,18px); margin-top:clamp(50px,6vw,80px); flex-wrap:wrap; }
+  .pp-step{ display:flex; flex-direction:column; align-items:center; text-align:center; width:clamp(90px,10vw,140px); }
+  .pp-circle{ width:clamp(56px,5.6vw,76px); height:clamp(56px,5.6vw,76px); border-radius:50%; border:2px solid var(--primary-3); display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+  .pp-circle iconify-icon{ font-size:clamp(22px,2.4vw,30px); color:var(--black); }
+  .pp-step p{ font-size:clamp(12px,1.15vw,15px); color:var(--grey-7); line-height:1.35; }
+  .pp-step p b{ display:block; color:var(--black); }
+  .pp-arrow{ color:var(--primary-5); font-size:clamp(18px,2vw,26px); margin-top:clamp(24px,2.6vw,36px); }
+  .pp-box{ margin-top:clamp(40px,5vw,64px); background:var(--primary-1); border:2px solid var(--primary-6); border-radius:18px; padding:clamp(18px,2vw,26px) clamp(22px,2.4vw,32px); font-weight:700; font-size:clamp(15px,1.4vw,19px); max-width:760px; color:var(--black); }
+
+  /* ================= two-col solution slides (6-10) ================= */
+  .sol{ background:#fff; }
+  .sol-wrap{ position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:clamp(30px,5vw,90px); align-items:center; max-width:1400px; margin:0 auto; width:100%; }
+  .sol-wrap.reverse{ direction:rtl; } .sol-wrap.reverse > *{ direction:ltr; }
+  .sol h1{ font-size:clamp(24px,2.6vw,38px); font-weight:800; letter-spacing:-.01em; line-height:1.2; margin-bottom:clamp(18px,2.2vw,30px); max-width:560px; }
+  .sol ul{ list-style:none; padding:0; margin:0 0 clamp(24px,3vw,40px) 0; display:flex; flex-direction:column; gap:14px; max-width:520px; }
+  .sol ul li{ display:flex; gap:12px; font-size:clamp(14px,1.25vw,17px); line-height:1.5; color:var(--grey-7); }
+  .sol ul li iconify-icon{ color:var(--primary-6); font-size:19px; margin-top:2px; flex-shrink:0; }
+  .sol ul li b{ color:var(--black); }
+  .sol blockquote{ margin:0; border-left:3px solid var(--primary-6); padding-left:16px; font-style:italic; color:var(--grey-6); font-size:clamp(13px,1.15vw,16px); max-width:480px; }
+  .sol-visual{ display:flex; justify-content:center; }
+
+  /* chat bubble mock (slide 6) */
+  .chat-mock{ display:flex; flex-direction:column; gap:10px; padding:16px; height:100%; justify-content:flex-end; }
+  .bubble{ max-width:82%; padding:10px 14px; border-radius:16px; font-size:12.5px; line-height:1.4; }
+  .bubble.wis{ background:var(--grey-2); align-self:flex-start; border-bottom-left-radius:4px; display:flex; gap:8px; align-items:flex-start; }
+  .bubble.wis img{ width:22px; height:16px; object-fit:contain; margin-top:2px; }
+  .bubble.user{ background:var(--primary-6); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; font-weight:600; }
+  .chat-top{ padding:14px 16px 6px; font-size:11px; color:var(--grey-5); font-weight:600; display:flex; align-items:center; gap:6px; }
+
+  /* watch + notif card composition (slide 7) */
+  .s7-visual{ display:flex; align-items:center; gap:clamp(18px,2.4vw,34px); }
+  .watch__screen .w-top{ display:flex; justify-content:space-between; font-size:9px; color:var(--grey-5); font-weight:600; }
+  .watch__screen .w-face{ flex:1; display:flex; align-items:center; justify-content:center; }
+  .watch__screen .w-face img{ width:56%; }
+  .watch__screen .w-alert{ background:var(--primary-6); border-radius:10px; padding:6px 8px; display:flex; align-items:center; justify-content:space-between; font-size:9px; font-weight:700; }
+  .notif-card{ width:clamp(220px,20vw,270px); background:#111; border-radius:22px; padding:18px; color:#fff; box-shadow:0 40px 70px -30px rgba(0,0,0,.5); }
+  .notif-card .nc-eyebrow{ font-size:10px; letter-spacing:.06em; color:var(--grey-5); font-weight:700; text-transform:uppercase; }
+  .notif-card .nc-title{ font-size:13px; font-weight:600; margin-top:6px; line-height:1.4; color:#e8e6e6; }
+  .notif-card .nc-timer{ display:flex; justify-content:space-between; align-items:baseline; margin:16px 0 12px; border-top:1px solid #2a2a2a; padding-top:14px; }
+  .notif-card .nc-timer .t{ font-family:var(--font-data); font-weight:600; font-size:24px; }
+  .notif-card .nc-timer .s{ font-size:10px; color:var(--grey-5); }
+  .notif-card .nc-badge{ background:#262626; font-size:9px; padding:3px 8px; border-radius:20px; color:var(--grey-5); font-weight:600; }
+  .notif-card .nc-row{ display:flex; align-items:center; gap:10px; font-size:11px; padding:7px 0; color:#cfcfcf; }
+  .notif-card .nc-row iconify-icon{ font-size:16px; background:#262626; border-radius:50%; padding:6px; color:var(--primary-4); }
+  .notif-card .nc-row.done iconify-icon{ background:var(--primary-6); color:#fff; }
+  .notif-card .nc-actions{ display:flex; gap:6px; margin-top:14px; }
+  .notif-card .nc-actions .btn{ font-size:10px; font-weight:700; padding:8px 10px; border-radius:10px; display:flex; align-items:center; gap:4px; }
+  .notif-card .nc-actions .primary{ background:var(--primary-6); color:#fff; }
+  .notif-card .nc-actions .secondary{ background:#262626; color:#fff; }
+
+  /* triage list mock (slide 8) */
+  .triage-list{ padding:16px; display:flex; flex-direction:column; gap:10px; }
+  .triage-item{ border-radius:14px; padding:12px 14px; display:flex; gap:10px; align-items:flex-start; }
+  .triage-item.urgent{ background:var(--primary-1); border:1px solid var(--primary-3); }
+  .triage-item.resolved{ background:var(--grey-2); opacity:.85; }
+  .triage-item iconify-icon{ font-size:16px; margin-top:1px; }
+  .triage-item.urgent iconify-icon{ color:var(--primary-6); }
+  .triage-item.resolved iconify-icon{ color:var(--grey-5); }
+  .triage-item .tt{ font-size:11.5px; font-weight:700; }
+  .triage-item .ts{ font-size:10.5px; color:var(--grey-6); margin-top:2px; }
+  .triage-divider{ font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--grey-5); text-transform:uppercase; padding:6px 14px 0; }
+
+  /* value narrator visual (slide 9) */
+  .s9-visual{ position:relative; display:flex; justify-content:center; }
+  .s9-visual .riepilogo-card{ width:clamp(260px,26vw,340px); border-radius:22px; overflow:hidden; box-shadow:0 40px 70px -30px rgba(0,0,0,.35); }
+  .s9-visual .riepilogo-card img{ width:100%; display:block; }
+  .s9-visual .challenge-peek{ width:clamp(170px,17vw,220px); border-radius:18px; overflow:hidden; box-shadow:0 30px 50px -25px rgba(0,0,0,.3); position:absolute; right:-6%; bottom:-8%; border:6px solid #fff; }
+  .s9-visual .challenge-peek img{ width:100%; display:block; }
+
+  /* autonomy visual (slide 10) */
+  .s10-visual .autonomy-card{ width:clamp(280px,28vw,380px); border-radius:24px; overflow:hidden; box-shadow:0 40px 70px -30px rgba(0,0,0,.35); }
+  .s10-visual .autonomy-card img{ width:100%; display:block; }
+  .autonomy-levels{ display:flex; gap:8px; margin-top:16px; }
+  .autonomy-levels .lvl{ flex:1; text-align:center; padding:8px 4px; border-radius:10px; font-size:10.5px; font-weight:700; background:var(--grey-2); color:var(--grey-6); }
+  .autonomy-levels .lvl.active{ background:var(--primary-6); color:#fff; }
+
+  /* ================= SLIDE 11 — CLOSING ================= */
+  #s11{ background:var(--black); color:#fff; align-items:center; text-align:center; }
+  #s11 .close-title{ font-size:clamp(40px,7vw,100px); font-weight:800; letter-spacing:-.03em; }
+  #s11 .close-sub{ color:var(--grey-5); font-size:clamp(14px,1.6vw,19px); margin-top:18px; }
+  #s11 .lockup{ margin-top:clamp(50px,6vw,80px); }
+
+  @media (max-width:900px){
+    .persona-wrap, .sol-wrap{ grid-template-columns:1fr; }
+    .sol-wrap.reverse{ direction:ltr; }
+    .sol-visual{ order:-1; }
+    .s7-visual{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="navdots">
+  <a href="#s1" data-label="Cover"></a>
+  <a href="#s2" data-label="Timeline"></a>
+  <a href="#s3" data-label="Manifesto"></a>
+  <a href="#s4" data-label="Persona"></a>
+  <a href="#s5" data-label="Pain Points"></a>
+  <a href="#s6" data-label="Compagno"></a>
+  <a href="#s7" data-label="Notifiche"></a>
+  <a href="#s8" data-label="Triage"></a>
+  <a href="#s9" data-label="Valore"></a>
+  <a href="#s10" data-label="Autonomia"></a>
+  <a href="#s11" data-label="Chiusura"></a>
+</nav>
+
+<!-- ===================== SLIDE 1 — COVER ===================== -->
+<section class="slide" id="s1">
+  <div class="slide-chrome">
+    <div class="chrome-topleft">WIS.home</div>
+    <div class="chrome-topright">
+      <div class="lockup">
+        <div class="brand-tag">tag</div>
+        <span class="x">×</span>
+        <span class="brand-gewiss on-dark">GEWISS</span>
+      </div>
+    </div>
+  </div>
+  <div class="cover-wrap">
+    <div class="cover-headline">
+      <div class="l1">Progettiamo la <b>Relazione,</b></div>
+      <div class="l2">non il <b>comando</b></div>
+    </div>
+    <div class="cover-phone">
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__inner"><img src="uploads/Card_Home.png" alt="WIS home app"></div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-sub" style="margin:0 auto; position:absolute; bottom:clamp(60px,8vw,100px); left:0; right:0;">
+    UX/UI Master Project Work — WIS Home Agent Interface
+  </div>
+</section>
+
+<!-- ===================== SLIDE 2 — TIMELINE ===================== -->
+<section class="slide" id="s2">
+  <div class="s2-content">
+    <div class="s2-orange">
+      <div class="eyebrow on-wave">Evoluzione del paradigma</div>
+      <h1>Timeline</h1>
+    </div>
+
+    <div class="timeline-row">
+      <div class="tl-card">Manuale</div>
+      <div class="tl-card">Comando</div>
+      <div class="tl-card">Intenzione</div>
+      <div class="tl-card accent">Autonomia</div>
+    </div>
+    <div class="tl-axis">
+      <div class="line"></div>
+      <iconify-icon class="arrowhead" icon="solar:alt-arrow-right-linear"></iconify-icon>
+    </div>
+    <div class="tl-labels">
+      <span>Passato</span>
+      <span>Futuro</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 3 — MANIFESTO ===================== -->
+<section class="slide" id="s3">
+  <svg class="arc-deco" viewBox="0 0 1000 800" preserveAspectRatio="none">
+    <path d="M20,220 C300,20 700,20 980,260" fill="none" stroke="var(--primary-3)" stroke-width="3" stroke-dasharray="10 12" stroke-linecap="round"/>
+  </svg>
+  <div class="manifesto-quote">
+    <span class="quote-mark">&ldquo;</span>Il futuro <span class="hl">non</span> è una casa che <span class="hl">esegue</span> meglio i comandi, ma una casa che <span class="hl">collabora</span> con l'utente: comprende il contesto, <span class="hl">agisce in autonomia</span> e mantiene trasparente il confine tra decisione del sistema e controllo umano<span class="quote-mark">&rdquo;</span>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 4 — PERSONA ===================== -->
+<section class="slide" id="s4">
+  <div class="persona-wrap">
+    <div>
+      <div class="persona-head">Andrea, la nostra persona chiave</div>
+      <p class="persona-sub">Il profilo su cui abbiamo costruito ogni decisione di prodotto: tanti contesti, poco tempo, bisogno di fidarsi.</p>
+      <div class="persona-stats">
+        <div class="p-stat"><iconify-icon icon="solar:user-rounded-linear"></iconify-icon><div class="num">45 anni</div><div class="lbl">Età</div></div>
+        <div class="p-stat"><iconify-icon icon="solar:home-2-linear"></iconify-icon><div class="num">2 case</div><div class="lbl">Contesti da gestire</div></div>
+        <div class="p-stat"><iconify-icon icon="solar:case-linear"></iconify-icon><div class="num">Full-time</div><div class="lbl">Lavoro</div></div>
+        <div class="p-stat"><iconify-icon icon="solar:users-group-rounded-linear"></iconify-icon><div class="num">Famiglia</div><div class="lbl">Vive con partner e figlio, si occupa anche della casa della mamma</div></div>
+      </div>
+    </div>
+    <div class="persona-visual">
+      <img src="assets/wis-avatar.png" alt="WIS">
+      <div class="tag2">Andrea non ha tempo di imparare un'interfaccia. Ha bisogno che la casa capisca lui.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 5 — PAIN POINTS ===================== -->
+<section class="slide" id="s5">
+  <div class="slide-chrome">
+    <div class="chrome-topright"><div class="brand-tag">tag</div></div>
+    <div class="chrome-bottomleft"><span class="brand-gewiss">GEWISS</span></div>
+  </div>
+  <h1>Una giornata senza WIS</h1>
+  <div class="pp-row">
+    <div class="pp-step"><div class="pp-circle"><iconify-icon icon="solar:bell-linear"></iconify-icon></div><p>12 notifiche non lette</p></div>
+    <iconify-icon class="pp-arrow" icon="solar:arrow-right-linear"></iconify-icon>
+    <div class="pp-step"><div class="pp-circle"><iconify-icon icon="solar:danger-triangle-linear"></iconify-icon></div><p>"Il fornello è ancora acceso"</p></div>
+    <iconify-icon class="pp-arrow" icon="solar:arrow-right-linear"></iconify-icon>
+    <div class="pp-step"><div class="pp-circle"><iconify-icon icon="solar:waterdrop-linear"></iconify-icon></div><p>"possibile perdita d'acqua"</p></div>
+    <iconify-icon class="pp-arrow" icon="solar:arrow-right-linear"></iconify-icon>
+    <div class="pp-step"><div class="pp-circle"><iconify-icon icon="solar:document-linear"></iconify-icon></div><p>Bolletta incomprensibile</p></div>
+    <iconify-icon class="pp-arrow" icon="solar:arrow-right-linear"></iconify-icon>
+    <div class="pp-step"><div class="pp-circle"><iconify-icon icon="solar:confounded-square-linear"></iconify-icon></div><p>Molte informazioni ma <b>poche risposte</b></p></div>
+  </div>
+  <div class="pp-box">Pain Point: le informazioni arrivano ma non aiutano a decidere</div>
+</section>
+
+<!-- ===================== SLIDE 6 — COMPAGNO ===================== -->
+<section class="slide sol" id="s6">
+  <div class="slide-chrome"><div class="chrome-topright"><div class="brand-tag">tag</div></div></div>
+  <div class="sol-wrap">
+    <div>
+      <h1>WIS come compagno: AI umanizzata, non un comando</h1>
+      <ul>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>La <b>relazione</b> è al centro: nessuna azione manuale richiesta</span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Tutto gestibile tramite <b>conversazione naturale</b></span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Il controllo manuale resta <b>sempre disponibile</b>, se l'utente lo vuole</span></li>
+      </ul>
+      <blockquote>"Collaboration, not control." — Gewiss Brief</blockquote>
+    </div>
+    <div class="sol-visual">
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__inner stack">
+          <div class="chat-top"><iconify-icon icon="solar:microphone-linear"></iconify-icon> Conversazione con WIS</div>
+          <div class="chat-mock">
+            <div class="bubble user">Spegni tutto in soggiorno</div>
+            <div class="bubble wis"><img src="assets/Head_Wis.png" alt="WIS"><span>Fatto — luci e TV spente. Ho lasciato acceso il deumidificatore, stava ancora lavorando.</span></div>
+            <div class="bubble user">Perfetto, grazie</div>
+            <div class="bubble wis"><img src="assets/Head_Wis.png" alt="WIS"><span>Sempre qui 🙂 puoi comunque gestire tutto a mano dall'app.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 7 — WORK NOTIFY ===================== -->
+<section class="slide sol" id="s7">
+  <div class="sol-wrap reverse">
+    <div>
+      <h1>Andrea è al lavoro. WIS lo interrompe solo quando conta davvero.</h1>
+      <ul>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Le notifiche arrivano solo per eventi <b>davvero rilevanti</b></span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>WIS suggerisce, ma la <b>decisione è sempre di Andrea</b></span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Tutto gestibile <b>direttamente dalla notifica</b>, senza aprire l'app</span></li>
+      </ul>
+      <blockquote>"From a source of interruption into a source of confidence."</blockquote>
+    </div>
+    <div class="sol-visual s7-visual">
+      <div class="watch">
+        <div class="watch__screen">
+          <div class="w-top"><span>TUE 12</span><span>10:09</span></div>
+          <div class="w-face"><img src="assets/Head_Wis.png" alt="WIS"></div>
+          <div class="w-alert"><span>WIS · Avviso urgente</span><span style="color:#F48457;">LIVE</span></div>
+        </div>
+      </div>
+      <div class="notif-card">
+        <div class="nc-eyebrow">Preparazione rientro attiva</div>
+        <div class="nc-title">Casa a 24° e garage pronto quando arrivi</div>
+        <div class="nc-timer"><div><div class="s">Pronta in</div><div class="t">06:03</div></div><div class="nc-badge">In pausa</div></div>
+        <div class="nc-row done"><iconify-icon icon="solar:check-circle-bold"></iconify-icon> Ho acceso il condizionatore a 24°.</div>
+        <div class="nc-row"><iconify-icon icon="solar:garage-linear"></iconify-icon> Aprirò il garage entro 200m da casa.</div>
+        <div class="nc-row"><iconify-icon icon="solar:wind-linear"></iconify-icon> Ventilazione automatica attiva in ingresso.</div>
+        <div class="nc-actions">
+          <div class="btn primary"><iconify-icon icon="solar:play-linear"></iconify-icon>Riprendi</div>
+          <div class="btn secondary"><iconify-icon icon="solar:close-circle-linear"></iconify-icon>Annulla</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 8 — TRIAGE ===================== -->
+<section class="slide sol" id="s8">
+  <div class="sol-wrap">
+    <div>
+      <h1>WIS distingue quello che conta da quello che ha già risolto.</h1>
+      <ul>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span><b>Urgente in cima</b>, per approfondimento</span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Gestito sotto: <b>zero rumore inutile ma trasparenza totale</b></span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Passata l'emergenza, WIS <b>osserva, impara e suggerisce</b></span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Il suggerimento arriva come <b>conversazione, non come notifica</b></span></li>
+      </ul>
+      <blockquote>"How can AI transform notifications from a source of interruption into a source of confidence?"</blockquote>
+    </div>
+    <div class="sol-visual">
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__inner stack">
+          <div class="chat-top"><iconify-icon icon="solar:bell-linear"></iconify-icon> Attività di oggi</div>
+          <div class="triage-list">
+            <div class="triage-divider">Urgente</div>
+            <div class="triage-item urgent"><iconify-icon icon="solar:danger-triangle-bold"></iconify-icon><div><div class="tt">Fornello acceso da 40 min</div><div class="ts">Cucina · richiede conferma</div></div></div>
+            <div class="triage-divider">Gestito da WIS</div>
+            <div class="triage-item resolved"><iconify-icon icon="solar:check-circle-bold"></iconify-icon><div><div class="tt">Irrigazione posticipata per pioggia</div><div class="ts">Giardino · risolto alle 07:12</div></div></div>
+            <div class="triage-item resolved"><iconify-icon icon="solar:check-circle-bold"></iconify-icon><div><div class="tt">Lavatrice spostata in notturna</div><div class="ts">Lavanderia · risolto alle 22:00</div></div></div>
+            <div class="triage-item resolved"><iconify-icon icon="solar:check-circle-bold"></iconify-icon><div><div class="tt">Luci ingresso regolate su presenza</div><div class="ts">Ingresso · risolto alle 19:40</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 9 — VALUE NARRATOR ===================== -->
+<section class="slide sol" id="s9">
+  <div class="sol-wrap reverse">
+    <div>
+      <h1>La casa restituisce valore. WIS lo rende visibile.</h1>
+      <ul>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span><b>Il riepilogo</b>: un numero concreto, condiviso, ogni mese</span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span><b>Le sfide</b>: per incentivare comportamenti virtuosi su luce, clima, tempo, aria</span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span><b>L'approfondimento</b>: ogni sfida racconta quanto vale, quanto manca, quanto si guadagna</span></li>
+      </ul>
+      <blockquote>The AI should act not only as a Home Manager, but as a Value Narrator.</blockquote>
+    </div>
+    <div class="sol-visual s9-visual">
+      <div class="riepilogo-card"><img src="uploads/riepilogo.png" alt="Riepilogo mensile"></div>
+      <div class="challenge-peek"><img src="uploads/challenge.png" alt="Sfide"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 10 — AUTONOMY ===================== -->
+<section class="slide sol" id="s10">
+  <div class="sol-wrap">
+    <div>
+      <h1>Andrea decide quanto fidarsi. WIS si adatta.</h1>
+      <ul>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span><b>Personalizza WIS</b>: tre livelli di autonomia, scelti dall'utente</span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span>Il controllo non sparisce mai — <b>si delega, consapevolmente</b></span></li>
+        <li><iconify-icon icon="solar:check-circle-linear"></iconify-icon><span><b>Gestione multi-casa</b>: contesti diversi, un'unica app</span></li>
+      </ul>
+      <div class="autonomy-levels">
+        <div class="lvl">Suggerisce</div>
+        <div class="lvl active">Chiede conferma</div>
+        <div class="lvl">Agisce in autonomia</div>
+      </div>
+      <blockquote style="margin-top:24px;">"L'autonomia si calibra sulla fiducia, non si impone di default."</blockquote>
+    </div>
+    <div class="sol-visual s10-visual">
+      <div class="autonomy-card"><img src="uploads/Accendi_Spegni_Dispositivi.png" alt="Controllo manuale dispositivi"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SLIDE 11 — CLOSING ===================== -->
+<section class="slide" id="s11">
+  <div class="close-title">Grazie.</div>
+  <div class="close-sub">WIS.home — Progettiamo la Relazione, non il comando</div>
+  <div class="lockup">
+    <div class="brand-tag">tag</div>
+    <span class="x">×</span>
+    <span class="brand-gewiss on-dark">GEWISS</span>
+  </div>
+</section>
+
+<script>
+  const dots = document.querySelectorAll('#navdots a');
+  const slides = document.querySelectorAll('section.slide');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const id = e.target.id;
+        dots.forEach(d=>d.classList.toggle('active', d.getAttribute('href')==='#'+id));
+      }
+    });
+  }, { threshold:0.55 });
+  slides.forEach(s=>io.observe(s));
+
+  document.addEventListener('keydown',(e)=>{
+    const idx = [...slides].findIndex(s=>{
+      const r = s.getBoundingClientRect();
+      return r.top >= -10 && r.top < window.innerHeight*0.5;
+    });
+    if(e.key==='ArrowDown' || e.key==='PageDown'){
+      e.preventDefault();
+      const next = slides[Math.min(idx+1, slides.length-1)];
+      next && next.scrollIntoView({behavior:'smooth'});
+    }
+    if(e.key==='ArrowUp' || e.key==='PageUp'){
+      e.preventDefault();
+      const prev = slides[Math.max(idx-1,0)];
+      prev && prev.scrollIntoView({behavior:'smooth'});
+    }
+  });
+</script>
+</body>
+</html>
